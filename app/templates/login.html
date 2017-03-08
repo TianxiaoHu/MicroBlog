@@ -8,11 +8,9 @@
     <p>
         Please enter your account information:<br>
         email: {{form.email(size=40)}}
-        {% for error in form.errors.openid %}
-        <span style="color: red;">[{{error}}]</span>
-        {% endfor %}<br>
     </p>
     <p>{{form.remember_me}} Remember Me</p>
+    <p>Click <a href="{{ url_for('signup')}}">here</a> to create a new account</p>
     <p><input type="submit" value="Sign In"></p>
 </form>
 {% endblock %}

@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm
-from forms import LoginForm, EditForm
+from forms import LoginForm, SignupForm, EditForm
 from models import User, ROLE_USER, ROLE_ADMIN
 from datetime import datetime
 
@@ -43,28 +43,29 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        # TO BE FINISHED: anyone logging in will be authorized as 'admin'!
-        user = User.query.get(1)
-        login_user(user, remember=form.remember_me.data)
-        flash("Logged in successfully.")
-        return redirect(url_for('index'))
-
+        if User.query.filter_by(email=form.email.data).count() > 0:
+            user = User.query.filter_by(email=form.email.data).first()
+            login_user(user, remember=form.remember_me.data)
+            flash("Logged in successfully.")
+            return redirect(url_for('index'))
+        else:
+            flash("User does not exist.")
     return render_template('login.html', title = 'Sign In', form = form)
 
-# def after_login(resp):
-#     if user is None:
-#         nickname = resp.nickname
-#         if nickname is None or nickname == "":
-#             nickname = resp.email.split('@')[0]
-#         user = User(nickname = nickname, email = resp.email, role = ROLE_USER)
-#         db.session.add(user)
-#         db.session.commit()
-#     remember_me = False
-#     if 'remember_me' in session:
-#         remember_me = session['remember_me']
-#         session.pop('remember_me', None)
-#     login_user(user, remember = remember_me)
-#     return redirect(request.args.get('next') or url_for('index'))
+@app.route('/signup', methods = ['GET', 'POST'])
+def signup():
+    form = SignupForm()
+    if form.validate_on_submit():
+        db.session.add(User(nickname=User.make_unique_nickname(form.nickname.data),
+                            email=form.email.data))
+        db.session.commit()
+        user = User.query.filter_by(email=form.email.data).first()
+        login_user(user, remember=form.remember_me.data)
+        flash("Sign up successfully and you have logged in.")
+        db.session.add(user.follow(user))
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template('signup.html', title = 'Sign up', form = form)
 
 @app.route('/logout')
 def logout():
@@ -87,7 +88,7 @@ def user(nickname):
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
-    form = EditForm(g.user.name)
+    form = EditForm(g.user.nickname)
     if form.validate_on_submit():
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data

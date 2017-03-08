@@ -1,0 +1,18 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Sign Up</h1>
+<form action="" method="post" name="signup">
+    {{form.hidden_tag()}}
+    <p>
+        Please enter your email:<br>
+        email: {{form.email(size=40)}}<br>
+        Please enter your nickname:<br>
+        nickname: {{form.nickname(size=40)}}<br>
+    </p>
+    <p>{{form.remember_me}} Remember Me</p>
+    <p>Click <a href="{{ url_for('login')}}">here</a> to log in</p>
+    <p><input type="submit" value="Sign Up"></p>
+</form>
+{% endblock %}
