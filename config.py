@@ -16,3 +16,6 @@ MAIL_PASSWORD = None
 
 # administrator list
 ADMINS = ['hutianxiao_fdu@126.com']
+
+# pagination
+POSTS_PER_PAGE = 5
