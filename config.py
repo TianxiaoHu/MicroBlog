@@ -19,3 +19,7 @@ ADMINS = ['hutianxiao_fdu@126.com']
 
 # pagination
 POSTS_PER_PAGE = 5
+
+# search
+MAX_SEARCH_RESULTS = 50
+WHOOSH_BASE = os.path.join(basedir, 'search.db')
