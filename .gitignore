@@ -1,5 +1,6 @@
 *.pyc
 .DS_Store
-app.db
+*.db
 tmp/
 .idea/
+search.db/
